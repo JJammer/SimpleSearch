@@ -4,8 +4,7 @@ import java.io.File
 
 import search.model.Filename
 
-
-case class Index(filesToContent: Map[Filename, Set[String]]) {
+case class Index private[index](filesToContent: Map[Filename, Set[String]]) {
 
   def search(words: Set[String]): Map[Filename, Double] = filesToContent.map {
     case (filename, fileWords) => (filename, matchingScore(words, fileWords))
@@ -26,7 +25,7 @@ case class Index(filesToContent: Map[Filename, Set[String]]) {
     if (dist >= expected.length) 0 else (expected.length - dist).toDouble / expected.length
   }
 
-  def levenshteinDistance(a: String, b: String): Int = {
+  private def levenshteinDistance(a: String, b: String): Int = {
     val startRow = (0 to b.length).toList
     a.foldLeft(startRow) { (prevRow, aElem) =>
       (prevRow.zip(prevRow.tail).zip(b)).scanLeft(prevRow.head + 1) {
