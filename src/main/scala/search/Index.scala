@@ -7,8 +7,10 @@ import scala.util.Using
 
 case class Index private[search](map: Map[String, Set[String]]) {
 
-  // TODO add logic
-  def search(words: Set[String]): Map[String, Double] = ???
+  def search(words: Set[String]): Map[String, Double] = map.map(entry => (entry._1, search(words, entry._2)))
+
+  def search(searchWords: Set[String], content: Set[String]): Double =
+    (searchWords.count(word => content.contains(word)) * 100) / searchWords.size
 }
 
 object Index {

@@ -7,6 +7,8 @@ import scala.util.Try
 
 object Program {
 
+  val ExitPhrase = ":quit"
+
   def readFile(args: Array[String]): Either[ReadFileError, File] = {
     for {
       path <- args.headOption.toRight(MissingPathArg)
@@ -22,8 +24,12 @@ object Program {
 
   def iterate(index: Index): Unit = {
     print(s"search> ")
-    val words: Set[String] = readLine().split(" ").toSet
-    println(index.search(words))
-    iterate(index)
+    val line = readLine()
+    if (line != ExitPhrase) {
+      val words: Set[String] = line.split("//s").toSet
+      val topResult = index.search(words).toList.sortWith(_._2 > _._2).take(10)
+      println(topResult)
+      iterate(index)
+    }
   }
 }

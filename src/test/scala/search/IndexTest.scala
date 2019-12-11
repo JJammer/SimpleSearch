@@ -10,7 +10,32 @@ class IndexTest extends FlatSpec with Matchers {
     val map: Map[String, Set[String]] = Map("file1" -> Set("banana", "apple", "orange", "pizza", "water"))
     val index = new Index(map)
 
-    index.search(Set("orange", "apple", "banana")) should be (Map[String, Double]("file1" -> 100))
+    index.search(Set("orange", "apple", "banana")) should be (Map("file1" -> 100))
+  }
+
+  "Search with no words from file" should "give 0% match" in {
+    val map: Map[String, Set[String]] = Map("file1" -> Set("banana", "apple", "orange", "pizza", "water"))
+    val index = new Index(map)
+
+    index.search(Set("silver", "gold")) should be (Map("file1" -> 0))
+  }
+
+  "Search that found 1 word from 2 expected" should "give 50% match" in {
+    val map: Map[String, Set[String]] = Map("file1" -> Set("banana", "apple", "orange", "pizza", "water"))
+    val index = new Index(map)
+
+    index.search(Set("orange", "lemon")) should be (Map("file1" -> 50))
+  }
+
+  "Search in different files" should "give different match" in {
+    val map: Map[String, Set[String]] = Map(
+      "file1" -> Set("banana", "apple", "orange", "pizza", "water"),
+      "file2" -> Set("orange", "banana"),
+      "file3" -> Set("fork")
+    )
+    val index = new Index(map)
+
+    index.search(Set("orange", "apple")) should be (Map("file1" -> 100, "file2" -> 50, "file3" -> 0))
   }
 
   "Parse folder with files" should "return index with content of all readable files" in {
