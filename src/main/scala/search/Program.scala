@@ -28,8 +28,10 @@ object Program {
 
   @tailrec
   def iterate(index: Index): Unit = {
-    println(s"search> ")
+    print(s"search> ")
     val line = readLine()
+    println(line)
+
     if (line != ExitPhrase) {
       val words: Set[String] = line.split("\\s+").toSet
       printByScore(index.search(words))(10)
