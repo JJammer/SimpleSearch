@@ -28,9 +28,7 @@ object Program {
 
   @tailrec
   def iterate(index: Index): Unit = {
-    print(s"search> ")
-    val line = readLine()
-    println(line)
+    val line = readLine("search> ")
 
     if (line != ExitPhrase) {
       val words: Set[String] = line.split("\\s+").toSet

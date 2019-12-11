@@ -5,17 +5,20 @@ import java.io.File
 import search.model.Filename
 
 
-case class Index private[index](filesToContent: Map[Filename, Set[String]]) {
+case class Index(filesToContent: Map[Filename, Set[String]]) {
 
   def search(words: Set[String]): Map[Filename, Double] = filesToContent.map {
     case (filename, fileWords) => (filename, matchingScore(words, fileWords))
   }
 
   private def matchingScore(searchWords: Set[String], content: Set[String]): Double = {
-    (searchWords.toList.map(search => content.toList.map(word => comparisonScore(search, word)).max).sum * 100) / searchWords.size
+    val scores = searchWords.toList
+      .flatMap(searchWord =>
+        content
+          .map(contentWord => comparisonScore(searchWord, contentWord))
+          .maxOption)
 
-    // old scoring method
-    //(searchWords.count(word => content.contains(word)) * 100) / searchWords.size
+    (scores.sum * 100) / searchWords.size
   }
 
   private def comparisonScore(expected: String, actual: String): Double = {
@@ -23,7 +26,7 @@ case class Index private[index](filesToContent: Map[Filename, Set[String]]) {
     if (dist >= expected.length) 0 else (expected.length - dist).toDouble / expected.length
   }
 
-  private def levenshteinDistance(a: String, b: String): Int = {
+  def levenshteinDistance(a: String, b: String): Int = {
     val startRow = (0 to b.length).toList
     a.foldLeft(startRow) { (prevRow, aElem) =>
       (prevRow.zip(prevRow.tail).zip(b)).scanLeft(prevRow.head + 1) {
