@@ -2,6 +2,10 @@ package search
 
 import java.io.File
 
+import search.index.Index
+import search.model.{FileNotFound, Filename, MissingPathArg, NotDirectory, ReadFileError}
+
+import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.Try
 
@@ -22,14 +26,27 @@ object Program {
     } yield file
   }
 
+  @tailrec
   def iterate(index: Index): Unit = {
-    print(s"search> ")
+    println(s"search> ")
     val line = readLine()
     if (line != ExitPhrase) {
-      val words: Set[String] = line.split("//s").toSet
-      val topResult = index.search(words).toList.sortWith(_._2 > _._2).take(10)
-      println(topResult)
+      val words: Set[String] = line.split("\\s+").toSet
+      printByScore(index.search(words))(10)
       iterate(index)
     }
   }
+
+  def printByScore(result: Map[Filename, Double])(limit: Int): Unit = {
+    result.toList.sortWith(_._2 > _._2).take(limit).foreach{ case (filename, score) => {
+      printDelimiter()
+      printf("%-30s", filename.value)
+      print("|")
+      printf("%6.2f%%%n", score)
+    }}
+    println()
+  }
+
+  def printDelimiter(): Unit = println(List.fill(40)('-').mkString)
+
 }

@@ -1,5 +1,7 @@
 package search
 
+import search.index.Index
+
 object Main extends App {
   Program
     .readFile(args)

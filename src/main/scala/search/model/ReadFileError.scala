@@ -1,4 +1,4 @@
-package search
+package search.model
 
 sealed trait ReadFileError
 
